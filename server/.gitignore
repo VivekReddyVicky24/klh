@@ -1,0 +1,67 @@
+# Dependency directories
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Runtime files
+pids/
+*.pid
+*.pid.lock
+*.seed
+
+# Build output
+dist/
+build/
+out/
+/.tmp
+/.temp
+
+# Coverage reports
+coverage/
+coverage-report/
+
+# Environment files
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+
+# Haskell build artifacts
+dist-newstyle/
+.stack-work/
+.cabal-sandbox/
+*.hi
+*.o
+*.prof
+*.eventlog
+*.dyn_o
+*.dyn_hi
+*.exe
+*.exe.stackdump
+ghc.environment.*
+
+# Misc
+*.tgz
+*.zip
+test-results.xml
+
+# Ignore the compiled server binary
+server
+
