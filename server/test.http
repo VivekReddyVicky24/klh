@@ -1,0 +1,36 @@
+
+GET http://localhost:5000/api/users
+
+
+###
+POST http://localhost:5000/api/add-user
+Content-Type:application/json
+
+{
+  "name": "Srikar",
+  "email": "srikar1@gmail.com",
+  "password": "123456"
+}
+
+###
+POST http://localhost:5000/api/register
+Content-Type:application/json
+
+{
+  "name": "Srikar13",
+  "email": "srikar14@gmail.com",
+  "password": "123456"
+}
+
+
+###
+POST http://localhost:5000/api/login
+Content-Type: application/json
+
+{
+  "email": "srikar14@gmail.com",
+  "password": "123456"
+}
+
+###
+GET http://localhost:5000/api/profile

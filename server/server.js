@@ -7,58 +7,48 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// ================= DB CONNECTION =================
 let db;
 
+// ================= DB CONNECTION =================
 async function connectDB() {
   try {
-    db = await mysql.createConnection({
+    db = await mysql.createPool({
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      waitForConnections: true,
+      connectionLimit: 10,
       ssl: {
-        rejectUnauthorized: true, // Required for TiDB Cloud
+        minVersion: "TLSv1.2",
       },
     });
 
     console.log("✅ Database connected successfully");
   } catch (error) {
-    console.error("❌ Database connection failed:", error.message);
+    console.error("❌ DB Connection Failed:", error.message);
   }
 }
 
 connectDB();
 
-// ================= ROUTES =================
+// ================= IMPORT ROUTES =================
+const userRoutes = require("./routes/userRoutes");
 
-// Health check
+// Pass db to routes using middleware
+app.use((req, res, next) => {
+  req.db = db;
+  next();
+});
+
+app.use("/api", userRoutes);
+
 app.get("/", (req, res) => {
-  res.json({ message: "Server Running" });
+  res.json({ message: "🚀 Server Running" });
 });
 
-// DB test route
-app.get("/test-db", async (req, res) => {
-  try {
-    const [rows] = await db.query("SELECT 1 + 1 AS result");
-
-    res.json({
-      db: "Connected",
-      calculation_result: rows[0].result
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      db: "Failed",
-      error: error.message
-    });
-  }
-});
-
-// ================= SERVER =================
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
