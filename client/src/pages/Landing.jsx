@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "../assets/style.css";
+import "../css/Landing.css";
 
 function Landing() {
   const navigate = useNavigate();
