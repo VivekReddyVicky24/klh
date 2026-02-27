@@ -1,34 +1,65 @@
 const express = require("express");
 const cors = require("cors");
-const mysql = require("mysql2/promise");
+const mongoose = require("mongoose");
+const http = require("http");
+const { Server } = require("socket.io");
 require("dotenv").config();
 
 const app = express();
+const server = http.createServer(app);
 
+// ================= SOCKET.IO SETUP =================
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+// ================= SOCKET LOGIC =================
+const Message = require("./models/messageModel");
+
+io.on("connection", (socket) => {
+  console.log("🟢 User connected:", socket.id);
+
+  socket.on("join_room", (groupId) => {
+    socket.join(groupId);
+  });
+
+  socket.on("send_message", async (data) => {
+    try {
+      const { groupId, senderId, content } = data;
+
+      const newMessage = await Message.create({
+        group: groupId,
+        sender: senderId,
+        content,
+      });
+
+      io.to(groupId).emit("receive_message", newMessage);
+
+    } catch (error) {
+      console.error(error.message);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 User disconnected:", socket.id);
+  });
+});
+
+// ================= MIDDLEWARE =================
 app.use(cors());
 app.use(express.json());
 
-let db;
-
-// ================= DB CONNECTION =================
+// ================= DATABASE CONNECTION =================
 async function connectDB() {
   try {
-    db = await mysql.createPool({
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      waitForConnections: true,
-      connectionLimit: 10,
-      ssl: {
-        minVersion: "TLSv1.2",
-      },
-    });
-
-    console.log("✅ Database connected successfully");
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB connected successfully");
   } catch (error) {
-    console.error("❌ DB Connection Failed:", error.message);
+    console.error("❌ MongoDB Connection Failed:", error.message);
+    process.exit(1);
   }
 }
 
@@ -36,21 +67,24 @@ connectDB();
 
 // ================= IMPORT ROUTES =================
 const userRoutes = require("./routes/userRoutes");
+const groupRoutes = require("./routes/groupRoutes");
+const messageRoutes = require("./routes/messageRoutes");
+const questionnaireRoutes = require("./routes/questionnaireRoutes");
 
-// Pass db to routes using middleware
-app.use((req, res, next) => {
-  req.db = db;
-  next();
-});
+// ================= USE ROUTES =================
+app.use("/api/users", userRoutes);
+app.use("/api/groups", groupRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/questionnaire", questionnaireRoutes);
 
-app.use("/api", userRoutes);
-
+// ================= ROOT ROUTE =================
 app.get("/", (req, res) => {
-  res.json({ message: "🚀 Server Running" });
+  res.json({ message: "🚀 Server Running Successfully" });
 });
 
+// ================= START SERVER =================
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

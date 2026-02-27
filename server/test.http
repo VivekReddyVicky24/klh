@@ -3,34 +3,86 @@ GET http://localhost:5000/api/users
 
 
 ###
-POST http://localhost:5000/api/add-user
-Content-Type:application/json
-
-{
-  "name": "Srikar",
-  "email": "srikar1@gmail.com",
-  "password": "123456"
-}
 
 ###
-POST http://localhost:5000/api/register
+### GET PROFILE
+GET http://localhost:5000/api/users/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YTFkYzg3YjI3N2Y5YzQ0Nzk4MzQ4ZCIsImlhdCI6MTc3MjIxNTQ0MSwiZXhwIjoxNzcyMjE5MDQxfQ.HEeVkLS1gjN3jR0PNnb6wuV2stJJPvLG0zDfXBknFeE
+
+
+###
+POST http://localhost:5000/api/users/register
 Content-Type:application/json
 
 {
-  "name": "Srikar13",
-  "email": "srikar14@gmail.com",
+  "name": "test",
+  "email": "test1@gmail.com",
   "password": "123456"
 }
 
 
 ###
-POST http://localhost:5000/api/login
+POST http://localhost:5000/api/users/login
 Content-Type: application/json
 
 {
-  "email": "srikar14@gmail.com",
+  "email": "test1@gmail.com",
   "password": "123456"
 }
 
 ###
 GET http://localhost:5000/api/profile
+
+###
+# POST http://localhost:5000/api/chat/send
+# Content-Type: application/json
+
+# {
+#   "groupId": "dsa-group-001",
+#   "chatRoomId": "room-abc-123",
+#   "senderId": "user-1",
+#   "senderName": "Rahul",
+#   "content": "Hello everyone!",
+#   "type": "text"
+# }
+
+
+### CREATE GROUP
+POST http://localhost:5000/api/groups/join
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YTFlZmI0ZmQ5ZTA4ZDIxYTQ3MGYyMiIsImlhdCI6MTc3MjIyMDM1NywiZXhwIjoxNzcyMjIzOTU3fQ.G7_xM3YKIRs5iOQLStyVPLpepo6rjjU56f8UtL8qIUg
+Content-Type: application/json
+
+{
+  "domain": "ML",
+  "level": "Intermediate"
+}
+
+
+### SUBMIT QUESTIONNAIRE
+POST http://localhost:5000/api/questionnaire/submit
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YTFkYzg3YjI3N2Y5YzQ0Nzk4MzQ4ZCIsImlhdCI6MTc3MjIxNTQ0MSwiZXhwIjoxNzcyMjE5MDQxfQ.HEeVkLS1gjN3jR0PNnb6wuV2stJJPvLG0zDfXBknFeE
+Content-Type: application/json
+
+{
+  "answers": [
+    { "questionId": "Q1", "score": 1 },
+    { "questionId": "Q2", "score": 2 },
+    { "questionId": "Q3", "score": 1 },
+    { "questionId": "Q4", "score": 1 },
+    { "questionId": "Q5", "score": 2 }
+  ]
+}
+
+### GET ALL GROUPS
+GET http://localhost:5000/api/groups
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YTFkYzg3YjI3N2Y5YzQ0Nzk4MzQ4ZCIsImlhdCI6MTc3MjIxNTQ0MSwiZXhwIjoxNzcyMjE5MDQxfQ.HEeVkLS1gjN3jR0PNnb6wuV2stJJPvLG0zDfXBknFeE
+
+### SEND MESSAGE
+POST http://localhost:5000/api/messages/send
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YTFkYzg3YjI3N2Y5YzQ0Nzk4MzQ4ZCIsImlhdCI6MTc3MjIxNTQ0MSwiZXhwIjoxNzcyMjE5MDQxfQ.HEeVkLS1gjN3jR0PNnb6wuV2stJJPvLG0zDfXBknFeE
+Content-Type: application/json
+
+{
+  "groupId": "69a1dd4dcb8a4ca417500f69",
+  "content": "Hello everyone! 👋"
+}

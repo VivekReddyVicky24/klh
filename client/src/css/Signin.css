@@ -14,6 +14,7 @@ body {
     flex-direction: column;
     font-family: 'Poppins', sans-serif;
     background: #f4f6fb;
+    padding: 20px;
 }
 
 h1 {
@@ -126,6 +127,7 @@ input:focus {
     width: 850px;
     max-width: 100%;
     min-height: 550px;
+    margin: 0 auto;
 }
 
 .auth-form-box {

@@ -1,33 +1,37 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const userModel = require("../models/userModel");
+const User = require("../models/userModel");
 
+
+// ================= REGISTER =================
 const register = async (req, res) => {
   try {
-    const db = req.db;
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ error: "All fields required" });
+      return res.status(400).json({ error: "All fields are required" });
     }
 
-    const existingUser = await userModel.findUserByEmail(db, email);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: "Email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await userModel.createUser(
-      db,
+    const newUser = await User.create({
       name,
       email,
-      hashedPassword
-    );
+      password: hashedPassword,
+    });
 
     res.status(201).json({
       message: "User registered successfully",
-      userId: result.insertId,
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+      },
     });
 
   } catch (error) {
@@ -35,12 +39,17 @@ const register = async (req, res) => {
   }
 };
 
+
+// ================= LOGIN =================
 const login = async (req, res) => {
   try {
-    const db = req.db;
     const { email, password } = req.body;
 
-    const user = await userModel.findUserByEmail(db, email);
+    if (!email || !password) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
@@ -51,7 +60,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -59,6 +68,12 @@ const login = async (req, res) => {
     res.json({
       message: "Login successful",
       token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        skills: user.skills || [],
+      },
     });
 
   } catch (error) {
@@ -66,7 +81,49 @@ const login = async (req, res) => {
   }
 };
 
+
+// ================= GET PROFILE =================
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+// ================= UPDATE SKILLS =================
+const updateSkills = async (req, res) => {
+  try {
+    const { skills } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { skills },
+      { new: true }
+    ).select("-password");
+
+    res.json({
+      message: "Skills updated successfully",
+      user,
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
   register,
   login,
+  getProfile,
+  updateSkills,
 };

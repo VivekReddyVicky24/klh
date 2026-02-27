@@ -10,50 +10,33 @@ function Signin() {
   const [registerData, setRegisterData] = useState({
     name: "",
     email: "",
-    password: ""
+    password: "",
   });
 
   const [loginData, setLoginData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
-  // ================= REGISTER =================
   const handleRegister = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/register",
-        registerData
-      );
-
+      const res = await axios.post("http://localhost:5000/api/users/register", registerData);
+      localStorage.setItem("token", res.data.token);
       alert("Registered Successfully!");
-      navigate("/questions"); // ✅ Redirect to Questions after registration
-
+      navigate("/questions"); // ✅ changed
     } catch (error) {
       alert(error.response?.data?.error || "Registration failed");
     }
   };
 
-  // ================= LOGIN =================
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/login",
-        loginData
-      );
-
-      // Save JWT
+      const res = await axios.post("http://localhost:5000/api/users/login", loginData);
       localStorage.setItem("token", res.data.token);
-
       alert("Login Successful!");
-      console.log("Token:", res.data.token);
-
-      // navigate("/dashboard");
-
+      navigate("/questions"); // ✅ changed
     } catch (error) {
       alert(error.response?.data?.error || "Login failed");
     }
@@ -66,41 +49,28 @@ function Signin() {
       <div className="auth-form-box register-form-box">
         <form onSubmit={handleRegister}>
           <h1>Create Account</h1>
-
           <input
             type="text"
             placeholder="Full Name"
             required
-            onChange={(e) =>
-              setRegisterData({ ...registerData, name: e.target.value })
-            }
+            onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
           />
-
           <input
             type="email"
             placeholder="Email Address"
             required
-            onChange={(e) =>
-              setRegisterData({ ...registerData, email: e.target.value })
-            }
+            onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
           />
-
           <input
             type="password"
             placeholder="Password"
             required
-            onChange={(e) =>
-              setRegisterData({ ...registerData, password: e.target.value })
-            }
+            onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
           />
-
           <button type="submit">Sign Up</button>
-
           <div className="mobile-switch">
             <p>Already have an account?</p>
-            <button type="button" onClick={() => setIsActive(false)}>
-              Sign In
-            </button>
+            <button type="button" onClick={() => setIsActive(false)}>Sign In</button>
           </div>
         </form>
       </div>
@@ -109,32 +79,22 @@ function Signin() {
       <div className="auth-form-box login-form-box">
         <form onSubmit={handleLogin}>
           <h1>Sign In</h1>
-
           <input
             type="email"
             placeholder="Email Address"
             required
-            onChange={(e) =>
-              setLoginData({ ...loginData, email: e.target.value })
-            }
+            onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
           />
-
           <input
             type="password"
             placeholder="Password"
             required
-            onChange={(e) =>
-              setLoginData({ ...loginData, password: e.target.value })
-            }
+            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
           />
-
           <button type="submit">Sign In</button>
-
           <div className="mobile-switch">
             <p>Don't have an account?</p>
-            <button type="button" onClick={() => setIsActive(true)}>
-              Sign Up
-            </button>
+            <button type="button" onClick={() => setIsActive(true)}>Sign Up</button>
           </div>
         </form>
       </div>
@@ -142,29 +102,17 @@ function Signin() {
       {/* SIDE PANEL */}
       <div className="slide-panel-wrapper">
         <div className="slide-panel">
-
           <div className="panel-content panel-content-left">
             <h1>Welcome Back!</h1>
-            <button
-              className="transparent-btn"
-              onClick={() => setIsActive(false)}
-            >
-              Sign In
-            </button>
+            <button className="transparent-btn" onClick={() => setIsActive(false)}>Sign In</button>
           </div>
-
           <div className="panel-content panel-content-right">
             <h1>Hey There!</h1>
-            <button
-              className="transparent-btn"
-              onClick={() => setIsActive(true)}
-            >
-              Sign Up
-            </button>
+            <button className="transparent-btn" onClick={() => setIsActive(true)}>Sign Up</button>
           </div>
-
         </div>
       </div>
+
     </div>
   );
 }
