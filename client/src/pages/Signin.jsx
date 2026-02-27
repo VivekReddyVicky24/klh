@@ -1,10 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
-//import 
+import { useNavigate } from "react-router-dom";
 import "../css/Signin.css";
 
 function Signin() {
   const [isActive, setIsActive] = useState(false);
+  const navigate = useNavigate();
 
   const [registerData, setRegisterData] = useState({
     name: "",
@@ -28,7 +29,7 @@ function Signin() {
       );
 
       alert("Registered Successfully!");
-      setIsActive(false);
+      navigate("/questions"); // ✅ Redirect to Questions after registration
 
     } catch (error) {
       alert(error.response?.data?.error || "Registration failed");
@@ -51,7 +52,6 @@ function Signin() {
       alert("Login Successful!");
       console.log("Token:", res.data.token);
 
-      // Example redirect
       // navigate("/dashboard");
 
     } catch (error) {
