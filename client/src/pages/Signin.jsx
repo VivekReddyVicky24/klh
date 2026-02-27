@@ -1,89 +1,139 @@
-import { useEffect } from "react";
+import { useState } from "react";
+import axios from "axios";
 import "../assets/style.css";
 
 function Signin() {
+  const [isActive, setIsActive] = useState(false);
 
-  useEffect(() => {
-    const registerBtn = document.getElementById("registerBtn");
-    const loginBtn = document.getElementById("loginBtn");
-    const mobileRegisterBtn = document.getElementById("mobileRegisterBtn");
-    const mobileLoginBtn = document.getElementById("mobileLoginBtn");
-    const authWrapper = document.getElementById("authWrapper");
+  const [registerData, setRegisterData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
 
-    if (registerBtn) {
-      registerBtn.addEventListener("click", () => {
-        authWrapper.classList.add("panel-active");
-      });
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: ""
+  });
+
+  // ================= REGISTER =================
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/register",
+        registerData
+      );
+
+      alert("Registered Successfully!");
+      setIsActive(false);
+
+    } catch (error) {
+      alert(error.response?.data?.error || "Registration failed");
     }
+  };
 
-    if (loginBtn) {
-      loginBtn.addEventListener("click", () => {
-        authWrapper.classList.remove("panel-active");
-      });
-    }
+  // ================= LOGIN =================
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-    if (mobileRegisterBtn) {
-      mobileRegisterBtn.addEventListener("click", () => {
-        authWrapper.classList.add("panel-active");
-      });
-    }
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/login",
+        loginData
+      );
 
-    if (mobileLoginBtn) {
-      mobileLoginBtn.addEventListener("click", () => {
-        authWrapper.classList.remove("panel-active");
-      });
+      // Save JWT
+      localStorage.setItem("token", res.data.token);
+
+      alert("Login Successful!");
+      console.log("Token:", res.data.token);
+
+      // Example redirect
+      // navigate("/dashboard");
+
+    } catch (error) {
+      alert(error.response?.data?.error || "Login failed");
     }
-  }, []);
+  };
 
   return (
-    <div className="auth-wrapper" id="authWrapper">
-      
+    <div className={`auth-wrapper ${isActive ? "panel-active" : ""}`}>
+
       {/* REGISTER */}
       <div className="auth-form-box register-form-box">
-        <form onSubmit={(e) => e.preventDefault()}>
+        <form onSubmit={handleRegister}>
           <h1>Create Account</h1>
 
-          <div className="social-links">
-            <a href="#"><i className="fab fa-facebook-f"></i></a>
-            <a href="#"><i className="fab fa-google"></i></a>
-            <a href="#"><i className="fab fa-linkedin-in"></i></a>
-          </div>
+          <input
+            type="text"
+            placeholder="Full Name"
+            required
+            onChange={(e) =>
+              setRegisterData({ ...registerData, name: e.target.value })
+            }
+          />
 
-          <span>or use your email for registration</span>
-          <input type="text" placeholder="Full Name" required />
-          <input type="email" placeholder="Email Address" required />
-          <input type="password" placeholder="Password" required />
+          <input
+            type="email"
+            placeholder="Email Address"
+            required
+            onChange={(e) =>
+              setRegisterData({ ...registerData, email: e.target.value })
+            }
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            required
+            onChange={(e) =>
+              setRegisterData({ ...registerData, password: e.target.value })
+            }
+          />
 
           <button type="submit">Sign Up</button>
 
           <div className="mobile-switch">
             <p>Already have an account?</p>
-            <button type="button" id="mobileLoginBtn">Sign In</button>
+            <button type="button" onClick={() => setIsActive(false)}>
+              Sign In
+            </button>
           </div>
         </form>
       </div>
 
       {/* LOGIN */}
       <div className="auth-form-box login-form-box">
-        <form onSubmit={(e) => e.preventDefault()}>
+        <form onSubmit={handleLogin}>
           <h1>Sign In</h1>
 
-          <div className="social-links">
-            <a href="#"><i className="fab fa-facebook-f"></i></a>
-            <a href="#"><i className="fab fa-google"></i></a>
-            <a href="#"><i className="fab fa-linkedin-in"></i></a>
-          </div>
+          <input
+            type="email"
+            placeholder="Email Address"
+            required
+            onChange={(e) =>
+              setLoginData({ ...loginData, email: e.target.value })
+            }
+          />
 
-          <span>or use your account</span>
-          <input type="email" placeholder="Email Address" required />
-          <input type="password" placeholder="Password" required />
+          <input
+            type="password"
+            placeholder="Password"
+            required
+            onChange={(e) =>
+              setLoginData({ ...loginData, password: e.target.value })
+            }
+          />
 
-          <a href="#">Forgot your password?</a>
           <button type="submit">Sign In</button>
 
           <div className="mobile-switch">
             <p>Don't have an account?</p>
-            <button type="button" id="mobileRegisterBtn">Sign Up</button>
+            <button type="button" onClick={() => setIsActive(true)}>
+              Sign Up
+            </button>
           </div>
         </form>
       </div>
@@ -94,19 +144,26 @@ function Signin() {
 
           <div className="panel-content panel-content-left">
             <h1>Welcome Back!</h1>
-            <p>Stay connected by logging in with your credentials</p>
-            <button className="transparent-btn" id="loginBtn">Sign In</button>
+            <button
+              className="transparent-btn"
+              onClick={() => setIsActive(false)}
+            >
+              Sign In
+            </button>
           </div>
 
           <div className="panel-content panel-content-right">
             <h1>Hey There!</h1>
-            <p>Begin your journey by creating an account today</p>
-            <button className="transparent-btn" id="registerBtn">Sign Up</button>
+            <button
+              className="transparent-btn"
+              onClick={() => setIsActive(true)}
+            >
+              Sign Up
+            </button>
           </div>
 
         </div>
       </div>
-
     </div>
   );
 }
